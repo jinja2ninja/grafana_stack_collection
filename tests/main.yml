@@ -1,0 +1,14 @@
+---
+- name: run roles
+  hosts: all
+  become: true
+  tasks:
+  - name: "Set vars"
+    ansible.builtin.set_fact:
+      ansible_host=test.example.com
+  roles:
+    - fahcsim.grafana_stack.loki_server
+    - fahcsim.grafana_stack.promtail
+    - fahcsim.grafana_stack.prometheus
+    - fahcsim.grafana_stack.prometheus_node_exporter
+    - fahcsim.grafana_stack.grafana
