@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        molecule_distro:
+        distro:
           - { "distro":"ubuntu-20.04", "command":"/lib/systemd/systemd" }
           - { "distro":"debian-10", "command":"/lib/systemd/systemd" }
         collection_role:
@@ -30,18 +30,19 @@ jobs:
         with:
           path: ansible_collections/fahcsim/grafana_stack
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
         with:
-          python-version: 3.8
-
-      - name: Install dependencies
-        run: |
-          sudo apt install apt-transport-https ca-certificates curl software-properties-common
-          curl -fsSL https://get.docker.com -o get-docker.sh
-          sudo sh get-docker.sh
-          python -m pip install --upgrade pip
-          pip install ansible molecule yamllint ansible-lint docker molecule-docker
+          python-version: '3.x'
+      - name: Install test dependencies.
+        run: pip3 install ansible molecule[docker] yamllint ansible-lint
+      - name: Run Molecule tests.
+        run: molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+          MOLECULE_DEBUG: '1'
       - name: Run role tests
         run: >-
           molecule --version &&
