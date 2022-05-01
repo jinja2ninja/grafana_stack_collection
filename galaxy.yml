@@ -3,9 +3,19 @@ name: grafana_stack
 version: 1.0.0
 readme: README.md
 authors:
-- Mischa Friegang mischatravis10@gmail.com
-description: Installs Grafana, Prometheus, Loki, Prometheus Node Exporter, and Promtail on Debian based systems.
-tags: ['prometheus', 'grafana', 'loki', 'promtail', 'prometheus_node_exporter', 'monitoring', 'logging', 'ubuntu', 'debian']
+  - Mischa Friegang mischatravis10@gmail.com
+description: "Installs Grafana, Prometheus, Loki, Prometheus Node Exporter,\
+             and Promtail on Debian based systems."
+tags:
+  - prometheus
+  - grafana
+  - loki
+  - promtail
+  - prometheus_node_exporter
+  - monitoring
+  - logging
+  - ubuntu
+  - debian
 dependencies: {}
 repository: https://github.com/fahcsim/grafana_stack_collection
 documentation: https://github.com/fahcsim/grafana_stack_collection/README.md
