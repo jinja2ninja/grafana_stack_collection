@@ -18,10 +18,9 @@ jobs:
       ANSIBLE_FORCE_COLOR: 1
     strategy:
       fail-fast: true
-      matrix:
         distro:
-          - { "distro":"ubuntu-20.04", "command":"/lib/systemd/systemd" }
-          - { "distro":"debian-10", "command":"/lib/systemd/systemd" }
+          - ubuntu2204
+          - debian11
         collection_role:
           - prometheus
     steps:
