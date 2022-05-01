@@ -9,8 +9,8 @@ lint: |
   ansible-lint
 platforms:
   - name: instance
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2204}-ansible:latest"
-    command: "molecule --debug test -s prometheus"
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2004}-ansible:latest"
+    command: "molecule --debug test -s tests/prometheus.yml"
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true
