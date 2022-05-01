@@ -34,12 +34,7 @@ jobs:
           ansible-lint
   integration:
     name: Integration
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - geerlingguy/docker-ubuntu2204-ansible
-          - geerlingguy/docker-debian11-ansible
+    runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v2
