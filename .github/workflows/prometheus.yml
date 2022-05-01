@@ -18,6 +18,7 @@ jobs:
       ANSIBLE_FORCE_COLOR: 1
     strategy:
       fail-fast: true
+      matrix:
         distro:
           - ubuntu2204
           - debian11
