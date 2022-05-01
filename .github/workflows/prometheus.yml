@@ -1,0 +1,51 @@
+name: "fahcsim.grafana_stack.prometheus"
+on:
+  push:
+    paths:
+      - 'roles/prometheus/**'
+      - 'molecule/prometheus/**'
+      - '.github/workflows/prometheus.yml'
+  pull_request:
+    paths:
+      - 'roles/prometheus/**'
+      - 'molecule/prometheus/**'
+      - '.github/workflows/prometheus.yml'
+jobs:
+  molecule:
+    runs-on: ubuntu-20.04
+    env:
+      PY_COLORS: 1
+      ANSIBLE_FORCE_COLOR: 1
+    strategy:
+      fail-fast: true
+      matrix:
+        molecule_distro:
+          - { "distro":"ubuntu-20.04", "command":"/lib/systemd/systemd" }
+          - { "distro":"debian-10", "command":"/lib/systemd/systemd" }
+        collection_role:
+          - prometheus
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+        with:
+          path: ansible_collections/fahcsim/grafana_stack
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          sudo apt install apt-transport-https ca-certificates curl software-properties-common
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sudo sh get-docker.sh
+          python -m pip install --upgrade pip
+          pip install ansible molecule yamllint ansible-lint docker molecule-docker
+      - name: Run role tests
+        run: >-
+          molecule --version &&
+          ansible --version &&
+          MOLECULE_COMMAND=${{ matrix.molecule_distro.command }}
+          MOLECULE_DISTRO=${{ matrix.molecule_distro.distro }}
+          molecule --debug test -s ${{ matrix.collection_role }}
