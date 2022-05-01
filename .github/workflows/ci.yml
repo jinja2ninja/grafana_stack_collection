@@ -38,8 +38,8 @@ jobs:
     strategy:
       matrix:
         os:
-          - debian11
-          - ubuntu2004
+          - geerlingguy/docker-ubuntu2204-ansible
+          - geerlingguy/docker-debian11-ansible
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v2
