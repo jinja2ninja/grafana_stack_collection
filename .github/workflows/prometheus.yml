@@ -40,3 +40,4 @@ jobs:
           ANSIBLE_FORCE_COLOR: '1'
           MOLECULE_DISTRO: ${{ matrix.distro }}
           MOLECULE_DEBUG: '1'
+          MOLECULE_FILE: 'molecule/prometheus/molecule.yml'
