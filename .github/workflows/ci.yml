@@ -1,4 +1,16 @@
 ---
+
+---
+name: CI
+'on':
+  pull_request:
+  push:
+    branches:
+      - master
+
+defaults:
+  run:
+    working-directory: ansible_collections/fahcsim/grafana_stack
 jobs:
 
   lint:
