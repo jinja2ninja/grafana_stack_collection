@@ -13,9 +13,6 @@ on:
 jobs:
   molecule:
     runs-on: ubuntu-20.04
-    env:
-      PY_COLORS: 1
-      ANSIBLE_FORCE_COLOR: 1
     strategy:
       fail-fast: true
       matrix:
