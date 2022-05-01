@@ -1,0 +1,89 @@
+---
+- name: install acl package
+  ansible.builtin.apt:
+    name: acl
+    state: present
+
+- name: create promtail group
+  ansible.builtin.group:
+    name: promtail
+    state: present
+
+- name: create promtail user
+  ansible.builtin.user:
+    name: promtail
+    groups:
+      - promtail
+      - systemd-journal
+    state: present
+    system: true
+
+- name: set facl to allow promtail user to read /var/log contents
+  ansible.posix.acl:
+    path: /var/log
+    entity: promtail
+    etype: user
+    permissions: rX
+    state: present
+
+- name: make promtail user owner of /tmp/positions.yaml
+  ansible.builtin.file:
+    path: /tmp/positions.yaml
+    owner: promtail
+    group: promtail
+    state: touch
+    mode: 0750
+  changed_when: false
+- name: install unzip package
+  ansible.builtin.apt:
+    name: unzip
+    state: present
+
+- name: extract tarball
+  ansible.builtin.unarchive:
+    src: "https://github.com/grafana/loki/releases/download/v\
+         {{  version  }}/promtail-linux-amd64.zip"
+    dest: /usr/bin/
+    remote_src: true
+  tags:
+    - loki
+
+- name: template systemd unit file
+  ansible.builtin.template:
+    src: templates/promtail.service.j2
+    dest: /etc/systemd/system/promtail.service
+    owner: root
+    group: root
+    mode: 0755
+  tags:
+    - loki
+
+- name: reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+  tags:
+    - loki
+
+- name: make directory for promtail config
+  ansible.builtin.file:
+    path: /etc/promtail
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+
+- name: template promtail config file
+  ansible.builtin.template:
+    src: templates/promtail.yml.j2
+    dest: /usr/local/bin/config-promtail.yml
+    owner: root
+    group: root
+    mode: 0644
+
+- name: restart promtail
+  become: true
+  ansible.builtin.systemd:
+    name: promtail
+    enabled: true
+    state: started
+  changed_when: false

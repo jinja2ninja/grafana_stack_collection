@@ -1,0 +1,76 @@
+---
+- name: extract tarball
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus/prometheus/releases/download/v\
+         {{  version  }}/prometheus-{{  version  }}.linux-amd64.tar.gz"
+    dest: /tmp
+    remote_src: true
+  tags:
+    - prometheus
+  changed_when: false
+
+- name: create /opt/prometheus directory
+  ansible.builtin.file:
+    path: /opt/prometheus
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: move prometheus binary
+  ansible.builtin.copy:
+    src: "/tmp/prometheus-{{  version  }}.linux-amd64/prometheus"
+    dest: /opt/prometheus
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true
+  tags:
+    - prometheus
+  notify: cleanup installer directory
+  changed_when: false
+
+- name: template systemd unit file
+  ansible.builtin.template:
+    src: templates/prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+    owner: root
+    group: root
+    mode: 0755
+  tags:
+    - prometheus
+  changed_when: false
+- name: make directory for prometheus config
+  ansible.builtin.file:
+    path: "{{  item  }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - /etc/prometheus
+    - /etc/prometheus/rules.d
+    - /etc/prometheus/files.d
+
+- name: template prometheus config file
+  ansible.builtin.template:
+    src: templates/prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - template
+- name: reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+  tags:
+    - prometheus
+
+- name: enable and start prometheus service
+  ansible.builtin.systemd:
+    name: prometheus
+    enabled: true
+    state: started
+  tags:
+    - prometheus

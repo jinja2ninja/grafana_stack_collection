@@ -1,0 +1,5 @@
+---
+- name: cleanup installer directory
+  ansible.builtin.file:
+    path: "/tmp/prometheus-{{  version  }}.linux-amd64"
+    state: absent

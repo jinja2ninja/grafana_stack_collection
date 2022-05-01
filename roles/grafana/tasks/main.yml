@@ -1,0 +1,27 @@
+---
+- name: install gpg-agent
+  ansible.builtin.apt:
+    name: gpg-agent
+    state: present
+
+- name: Add grafana signing key
+  ansible.builtin.apt_key:
+    url: https://packages.grafana.com/gpg.key
+    state: present
+
+- name: Add grafana apt repository
+  ansible.builtin.apt_repository:
+    repo: deb https://packages.grafana.com/oss/deb stable main
+    state: present
+
+- name: install grafana apt package
+  ansible.builtin.apt:
+    name: grafana
+    state: present
+    update_cache: true
+
+- name: enable and start grafana service
+  ansible.builtin.systemd:
+    name: grafana-server
+    enabled: true
+    state: started
