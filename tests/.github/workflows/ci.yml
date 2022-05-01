@@ -1,0 +1,54 @@
+---
+jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+        with:
+          path: ansible_collections/fahcsim/grafana_stack
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install yamllint ansible-core ansible-lint
+
+      - name: Lint code.
+        run: |
+          yamllint .
+          ansible-lint
+  integration:
+    name: Integration
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - debian11
+          - ubuntu2004
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+        with:
+          path: ansible_collections/fahcsim/grafana_stack
+      - name: Install test dependencies.
+        run: |
+          sudo pip3 install --upgrade pip
+          sudo pip3 install ansible-core
+      - name: Test the playbook's syntax.
+        run: ansible-playbook tests/test.yml --syntax-check
+      - name: Test the playbook.
+        run: ansible-playbook tests/test.yml
+        env:
+          ANSIBLE_FORCE_COLOR: '1'
+      - name: Idempotence check.
+        run: |
+          idempotence=$(mktemp)
+          ansible-playbook tests/test.yml | tee -a ${idempotence}
+          tail ${idempotence} | grep -q 'changed=0.*failed=0' && (echo 'Idempotence test: pass' && exit 0) || (echo 'Idempotence test: fail' && exit 1)
+        env:
+          ANSIBLE_FORCE_COLOR: '1'
