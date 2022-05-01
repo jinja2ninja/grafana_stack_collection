@@ -10,7 +10,7 @@ lint: |
 platforms:
   - name: instance
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2204}-ansible:latest"
-    command: ""
+    command: "molecule --debug test -s prometheus"
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true
