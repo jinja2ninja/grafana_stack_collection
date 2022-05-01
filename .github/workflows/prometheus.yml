@@ -43,18 +43,3 @@ jobs:
           ANSIBLE_FORCE_COLOR: '1'
           MOLECULE_DISTRO: ${{ matrix.distro }}
           MOLECULE_DEBUG: '1'
-      - name: Run role tests
-        run: >-
-          molecule --version &&
-          ansible --version &&
-          MOLECULE_COMMAND=${{ matrix.molecule_distro.command }}
-          MOLECULE_DISTRO=${{ matrix.distro  }}
-          molecule --debug test -s ${{ matrix.collection_role }}
-
-      - name: Run Molecule tests.
-        run: molecule test
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          MOLECULE_DISTRO: ${{ matrix.distro }}
-          MOLECULE_DEBUG: '1'
