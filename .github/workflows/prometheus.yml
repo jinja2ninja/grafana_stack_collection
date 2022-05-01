@@ -33,9 +33,10 @@ jobs:
           python-version: '3.x'
       - name: Install test dependencies.
         run: pip3 install ansible molecule[docker] yamllint ansible-lint
-      - name: Run role tests
-        run: >-
-          molecule --version &&
-          ansible --version &&
-          MOLECULE_DISTRO=${{ matrix.distro }}
-          molecule --debug test -s prometheus
+      - name: Run Molecule tests.
+        run: molecule test -s prometheus
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+          MOLECULE_DEBUG: '1'
