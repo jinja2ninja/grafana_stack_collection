@@ -6,6 +6,8 @@ authors:
   - Mischa Friegang mischatravis10@gmail.com
 description: "Installs Grafana, Prometheus, Loki, Prometheus Node Exporter,\
              and Promtail on Debian based systems."
+license:
+  - MIT
 tags:
   - prometheus
   - grafana
