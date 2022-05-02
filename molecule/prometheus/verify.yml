@@ -1,9 +1,0 @@
----
-- name: Verify
-  hosts: all
-  tasks:
-
-  - name: Verify Prometheus is serving web requests
-    ansible.builtin.uri:
-      url: "http://{{  ansible_default_ipv4.address  }}:9090"
-      status_code: 200

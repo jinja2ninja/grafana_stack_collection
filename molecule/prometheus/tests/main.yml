@@ -1,6 +1,0 @@
----
-- name: run roles
-  hosts: all
-  become: true
-  roles:
-    - fahcsim.grafana_stack.prometheus
