@@ -13,11 +13,11 @@ Current supported distributions are Debian 10/11 and Ubuntu 20/22.
 ##### Grafana
 
 ##### Prometheus
-- version: 2.35.0
+- `version: 2.35.0`
 ##### Loki
-- version: 2.5.0
+- `version: 2.5.0`
 ##### Prometheus Node Exporter
-- version: 1.3.1
+- `version: 1.3.1`
 ##### Promtail
-- version: 2.5.0
-- loki_server: localhost # change this to whatever host you want to use as the loki server
+- `version: 2.5.0`
+- `loki_server: localhost` - change this to whatever host you want to use as the loki server
