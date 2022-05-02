@@ -53,6 +53,8 @@ jobs:
           cp tests/inventory ./inventory
       - name: Test the playbook's syntax.
         run: ansible-playbook tests/test.yml --syntax-check
+      - name: Test the playbook.
+        run: ansible-playbook tests/test.yml
       - name: Idempotence check.
         run: |
           idempotence=$(mktemp)
