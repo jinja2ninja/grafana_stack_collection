@@ -1,5 +1,5 @@
 # Ansible Collection - fahcsim.grafana_stack
-v1.0.1
+v1.0.2
 [![CI](https://github.com/fahcsim/grafana_stack_collection/actions/workflows/prometheus.yml/badge.svg)](https://github.com/fahcsim/grafana_stack_collection/actions/workflows/prometheus.yml)
 ### This collection has a role for each of the following:
 - Prometheus
