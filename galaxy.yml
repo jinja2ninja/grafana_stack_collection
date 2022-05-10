@@ -1,6 +1,6 @@
 namespace: fahcsim
 name: grafana_stack
-version: 1.0.0
+version: 1.0.3
 readme: README.md
 authors:
   - Mischa Friegang mischatravis10@gmail.com
