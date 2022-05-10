@@ -19,3 +19,5 @@ tags:
 dependencies: {}
 repository: https://github.com/fahcsim/grafana_stack_collection
 documentation: https://github.com/fahcsim/grafana_stack_collection/README.md
+license:
+    - "MIT"
