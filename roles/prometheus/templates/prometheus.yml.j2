@@ -9,7 +9,7 @@ scrape_configs:
 - job_name: '{{  server  }}'
     scrape_interval: 5s
     static_configs:
-      - targets: ['{{  hostvars['server']['ansible_host']  }}:9100']
+      - targets: ['{{  hostvars[server]['ansible_host']  }}:9100']
     metrics_path: /metrics
   {% endfor %}
   
