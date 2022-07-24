@@ -15,7 +15,7 @@
     groups:
       - promtail
       - systemd-journal
-      - adms
+      - adm
     state: present
     system: true
 
