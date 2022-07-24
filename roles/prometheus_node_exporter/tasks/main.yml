@@ -15,6 +15,7 @@
     owner: root
     group: root
     mode: 0755
+
 - name: move node_exporter binary
   ansible.builtin.copy:
     src: /tmp/node_exporter-{{  version  }}.linux-amd64/node_exporter
@@ -35,11 +36,13 @@
     mode: 0755
   tags:
     - prometheus_exporter
+
 - name: reload systemd daemon
   ansible.builtin.systemd:
     daemon_reload: true
   tags:
     - prometheus_exporter
+    
 - name: enable and start node_exporter service
   ansible.builtin.systemd:
     name: node_exporter
