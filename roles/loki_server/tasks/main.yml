@@ -6,7 +6,7 @@
 - name: extract tarball
   ansible.builtin.unarchive:
     src: "https://github.com/grafana/loki/releases/download/v\
-         {{  version  }}/loki-linux-amd64.zip"
+         {{  loki_version  }}/loki-linux-amd64.zip"
     dest: /tmp
     remote_src: true
   tags:

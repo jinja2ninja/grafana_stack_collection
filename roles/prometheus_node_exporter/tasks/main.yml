@@ -2,7 +2,7 @@
 - name: extract tarball
   ansible.builtin.unarchive:
     src: "https://github.com/prometheus/node_exporter/releases/download/v\
-         {{  version  }}/node_exporter-{{  version  }}.linux-amd64.tar.gz"
+         {{  node_exporter_version  }}/node_exporter-{{  node_exporter_version  }}.linux-amd64.tar.gz"
     dest: /tmp
     remote_src: true
   tags:
@@ -18,7 +18,7 @@
 
 - name: move node_exporter binary
   ansible.builtin.copy:
-    src: /tmp/node_exporter-{{  version  }}.linux-amd64/node_exporter
+    src: /tmp/node_exporter-{{  node_exporter_version  }}.linux-amd64/node_exporter
     dest: /opt/prometheus/node_exporter
     owner: root
     group: root

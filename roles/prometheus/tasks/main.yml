@@ -2,7 +2,7 @@
 - name: extract tarball
   ansible.builtin.unarchive:
     src: "https://github.com/prometheus/prometheus/releases/download/v\
-         {{  version  }}/prometheus-{{  version  }}.linux-amd64.tar.gz"
+         {{  prometheus_version  }}/prometheus-{{  prometheus_version  }}.linux-amd64.tar.gz"
     dest: /tmp
     remote_src: true
   tags:
@@ -19,7 +19,7 @@
 
 - name: move prometheus binary
   ansible.builtin.copy:
-    src: "/tmp/prometheus-{{  version  }}.linux-amd64/prometheus"
+    src: "/tmp/prometheus-{{  prometheus_version  }}.linux-amd64/prometheus"
     dest: /opt/prometheus
     owner: root
     group: root
