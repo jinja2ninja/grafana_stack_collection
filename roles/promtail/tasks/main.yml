@@ -59,7 +59,7 @@
     remote_src: true
   tags:
     - loki
-  when: (not binary.stat.exists) or ('promtail_version | regex_search('\d.\d+.\d+')' != version)
+  when: (not binary.stat.exists) or (promtail_version.stdout | regex_search('\d.\d+.\d+') != version)
 
 - name: template systemd unit file
   ansible.builtin.template:
