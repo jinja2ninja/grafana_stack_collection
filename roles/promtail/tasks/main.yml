@@ -35,10 +35,21 @@
     state: touch
     mode: 0750
   changed_when: false
+
 - name: install unzip package
   ansible.builtin.apt:
     name: unzip
     state: present
+
+- name: check if binary exists
+  ansible.builtin.stat:
+    path: /usr/bin/promtail-linux-amd64
+  register: binary
+
+- name: check promtail version
+  ansible.builtin.shell: sudo promtail-linux-amd64 --version
+  register: promtail_version
+  when: not binary.stat.exists
 
 - name: extract tarball
   ansible.builtin.unarchive:
@@ -48,6 +59,7 @@
     remote_src: true
   tags:
     - loki
+  when: (not binary.stat.exists) or ('promtail_version | regex_search('\d.\d+.\d+')' != version)
 
 - name: template systemd unit file
   ansible.builtin.template:
