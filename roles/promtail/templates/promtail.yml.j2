@@ -16,4 +16,4 @@ scrape_configs:
         labels:
           job: varlogs
           __path__: /var/log/*log
-          host: {{  ansible_nodename  }}
+          host: {{  inventory_hostname  }}

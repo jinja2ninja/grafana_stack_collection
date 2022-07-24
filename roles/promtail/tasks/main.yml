@@ -48,28 +48,28 @@
 
 - name: check promtail version
   ansible.builtin.command: sudo promtail-linux-amd64 --version
-  register: promtail_version
+  register: promtail_version_check
   when: binary.stat.exists
 
 - name: install promtail if its not present
   ansible.builtin.unarchive:
     src: "https://github.com/grafana/loki/releases/download/v\
-         {{  version  }}/promtail-linux-amd64.zip"
+         {{  promtail_version  }}/promtail-linux-amd64.zip"
     dest: /usr/bin/
     remote_src: true
   tags:
     - loki
   when: (not binary.stat.exists)
 
-- name: update promtail version if newer version is defined in variable
+- name: update promtail if different version is defined in variable
   ansible.builtin.unarchive:
     src: "https://github.com/grafana/loki/releases/download/v\
-         {{  version  }}/promtail-linux-amd64.zip"
+         {{  promtail_version  }}/promtail-linux-amd64.zip"
     dest: /usr/bin/
     remote_src: true
   tags:
     - loki
-  when: (promtail_version is defined) and (promtail_version | regex_search('\d.\d+.\d+') != version)
+  when: (promtail_version_check | regex_search('\d.\d+.\d+') != promtail_version)
   notify: restart promtail
 
 - name: template systemd unit file
