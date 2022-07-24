@@ -3,16 +3,6 @@
     name: unzip
     state: present
 
-- name: extract tarball
-  ansible.builtin.unarchive:
-    src: "https://github.com/grafana/loki/releases/download/v\
-         {{  loki_version  }}/loki-linux-amd64.zip"
-    dest: /tmp
-    remote_src: true
-  tags:
-    - loki
-  changed_when: false
-
 - name: create /opt/loki directory
   ansible.builtin.file:
     path: /opt/loki
@@ -21,18 +11,45 @@
     group: root
     mode: 0755
 
-- name: move loki binary
-  ansible.builtin.copy:
-    src: "/tmp/loki-linux-amd64"
-    dest: /opt/loki/loki
-    owner: root
-    group: root
-    mode: 0755
+- name: check if binary exists
+  ansible.builtin.stat:
+    path: /opt/loki/loki
+  register: binary
+
+- name: check loki version
+  ansible.builtin.command: sudo /opt/loki/loki --version
+  register: loki_version_check
+  when: binary.stat.exists
+  changed_when: false
+
+- name: Show loki version
+  debug:
+    msg: "{{  loki_version_check | regex_search('\\d.\\d+.\\d+')  }} is installed, and {{  loki_version  }} is the newest"
+
+- name: install loki if its not present
+  ansible.builtin.unarchive:
+    src: "https://github.com/grafana/loki/releases/download/v\
+         {{  loki_version  }}/loki-linux-amd64.zip"
+    dest: /opt/loki/
     remote_src: true
   tags:
     - loki
-  notify: cleanup installer directory
-  changed_when: false
+  when: (not binary.stat.exists)
+  notify: 
+    - move loki binary
+
+- name: reinstall loki if different version is defined in variable
+  ansible.builtin.unarchive:
+    src: "https://github.com/grafana/loki/releases/download/v\
+         {{  loki_version  }}/loki-linux-amd64.zip"
+    dest: /opt/loki/
+    remote_src: true
+  tags:
+    - loki
+  when: (loki_version_check | regex_search('\d.\d+.\d+') != loki_version)
+  notify: 
+    - restart loki
+    - move loki binary
 
 - name: template systemd unit file
   ansible.builtin.template:
@@ -43,7 +60,7 @@
     mode: 0755
   tags:
     - loki
-  changed_when: false
+  notify: reload systemd daemon
 
 - name: make directory for loki config
   ansible.builtin.file:
@@ -60,12 +77,6 @@
     owner: root
     group: root
     mode: 0644
-
-- name: reload systemd daemon
-  ansible.builtin.systemd:
-    daemon_reload: true
-  tags:
-    - loki
 
 - name: enable and start loki service
   ansible.builtin.systemd:

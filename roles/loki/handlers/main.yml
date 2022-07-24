@@ -1,0 +1,27 @@
+---
+- name: restart loki
+  ansible.builtin.systemd:
+    name: loki
+    state: restarted
+    enabled: true
+
+- name: cleanup installer directory
+  ansible.builtin.file:
+    path: /opt/loki/loki-linux-amd64
+    state: absent
+
+- name: move loki binary
+  ansible.builtin.copy:
+    src: "/opt/loki/loki-linux-amd64"
+    dest: /opt/loki/loki
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true
+  notify: cleanup installer directory
+
+- name: reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+  tags:
+    - loki
