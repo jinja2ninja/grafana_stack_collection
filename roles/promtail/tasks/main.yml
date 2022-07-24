@@ -59,7 +59,7 @@
     remote_src: true
   tags:
     - loki
-  when: (not binary.stat.exists) or ((promtail_version is defined) and (promtail_version  | regex_search('\d.\d+.\d+') != version))
+  when: (not binary.stat.exists)
 
 - name: update promtail version if newer version is defined in variable
   ansible.builtin.unarchive:
