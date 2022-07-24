@@ -1,34 +1,79 @@
 ---
-- name: extract tarball
-  ansible.builtin.unarchive:
-    src: "https://github.com/prometheus/prometheus/releases/download/v\
-         {{  prometheus_version  }}/prometheus-{{  prometheus_version  }}.linux-amd64.tar.gz"
-    dest: /tmp
-    remote_src: true
-  tags:
-    - prometheus
-  changed_when: false
-
 - name: create /opt/prometheus directory
   ansible.builtin.file:
     path: /opt/prometheus
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: 0750
 
-- name: move prometheus binary
+- name: check if binary exists
+  ansible.builtin.stat:
+    path: /opt/prometheus/prometheus
+  register: binary
+
+- name: check prometheus version
+  ansible.builtin.command: /opt/prometheus/prometheus --version
+  register: prometheus_version_check
+  when: binary.stat.exists
+  changed_when: false
+
+- name: install prometheus if its not present
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus/prometheus/releases/download/v\
+         {{  prometheus_version  }}/prometheus-{{  prometheus_version  }}.linux-amd64.tar.gz"
+    dest: /opt/prometheus
+    remote_src: true
+  tags:
+    - loki
+  when: not binary.stat.exists
+
+- name: update prometheus if different version is defined in variable
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus/prometheus/releases/download/v\
+         {{  prometheus_version  }}/prometheus-{{  prometheus_version  }}.linux-amd64.tar.gz"
+    dest: /opt/prometheus/
+    remote_src: true
+  tags:
+    - loki
+  when: (prometheus_version_check | regex_search('\d.\d+.\d+') != prometheus_version)
+  notify: restart prometheus
+
+- name: check if install artifacts exist
+  ansible.builtin.stat:
+    path: "/opt/prometheus/prometheus-{{  prometheus_version  }}.linux-amd64/"
+  register: artifacts
+
+- name: stop prometheus service temporarily
+  ansible.builtin.systemd:
+    name: prometheus
+    state: stopped
+  when: (artifacts.stat.exists) and binary.stat.exists
+
+- name: Move prometheus and promtool binaries
   ansible.builtin.copy:
-    src: "/tmp/prometheus-{{  prometheus_version  }}.linux-amd64/prometheus"
+    src: "/opt/prometheus/prometheus-{{  prometheus_version  }}.linux-amd64/"
     dest: /opt/prometheus
     owner: root
     group: root
-    mode: 0755
+    mode: '0750'
     remote_src: true
-  tags:
-    - prometheus
-  notify: cleanup installer directory
-  changed_when: false
+  when: artifacts.stat.exists
+
+- name: remove artifacts from prometheus install
+  ansible.builtin.file:
+    path: "{{  item  }}"
+    state: absent
+  with_items:
+    - "/opt/prometheus/prometheus-{{  prometheus_version  }}.linux-amd64"
+    - "/opt/prometheus/prometheus.yml"
+  when: artifacts.stat.exists
+
+- name: start prometheus service temporarily
+  ansible.builtin.systemd:
+    name: prometheus
+    state: started
+  when: (artifacts.stat.exists) and binary.stat.exists
 
 - name: template systemd unit file
   ansible.builtin.template:
@@ -36,17 +81,18 @@
     dest: /etc/systemd/system/prometheus.service
     owner: root
     group: root
-    mode: 0755
+    mode: 0750
   tags:
     - prometheus
   changed_when: false
+
 - name: make directory for prometheus config
   ansible.builtin.file:
     path: "{{  item  }}"
     state: directory
     owner: root
     group: root
-    mode: 0644
+    mode: 0640
   with_items:
     - /etc/prometheus
     - /etc/prometheus/rules.d
@@ -58,9 +104,10 @@
     dest: /etc/prometheus/prometheus.yml
     owner: root
     group: root
-    mode: 0644
+    mode: 0640
   tags:
     - template
+
 - name: reload systemd daemon
   ansible.builtin.systemd:
     daemon_reload: true
