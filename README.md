@@ -38,3 +38,4 @@ Current supported distributions are Debian 10/11 and Ubuntu 20/22.
 ##### Promtail
 - `version: 2.6.1`
 - `loki_server: localhost` - change this to whatever host you want to use as the loki server
+
