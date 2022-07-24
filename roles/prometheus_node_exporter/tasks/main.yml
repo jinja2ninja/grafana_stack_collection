@@ -15,6 +15,7 @@
     owner: root
     group: root
     mode: 0755
+  changed_when: false
 
 - name: move node_exporter binary
   ansible.builtin.copy:

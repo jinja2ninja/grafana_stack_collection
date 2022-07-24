@@ -50,6 +50,7 @@
   ansible.builtin.command: sudo promtail-linux-amd64 --version
   register: promtail_version_check
   when: binary.stat.exists
+  changed_when: false
 
 - name: install promtail if its not present
   ansible.builtin.unarchive:

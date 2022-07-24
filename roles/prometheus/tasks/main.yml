@@ -6,6 +6,7 @@
     owner: root
     group: root
     mode: 0750
+  changed_when: false
 
 - name: check if binary exists
   ansible.builtin.stat:
