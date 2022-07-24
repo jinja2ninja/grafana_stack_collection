@@ -47,7 +47,7 @@
   register: binary
 
 - name: check promtail version
-  ansible.builtin.shell: sudo promtail-linux-amd64 --version
+  ansible.builtin.command: sudo promtail-linux-amd64 --version
   register: promtail_version
   when: binary.stat.exists
 
