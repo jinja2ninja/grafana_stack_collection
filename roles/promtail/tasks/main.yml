@@ -70,6 +70,7 @@
   tags:
     - loki
   when: (promtail_version is defined) and (promtail_version | regex_search('\d.\d+.\d+') != version)
+  notify: restart promtail
 
 - name: template systemd unit file
   ansible.builtin.template:
