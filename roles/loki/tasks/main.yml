@@ -23,7 +23,7 @@
   changed_when: false
 
 - name: Show loki version
-  debug:
+  ansible.builtin.debug:
     msg: "{{  loki_version_check | regex_search('\\d.\\d+.\\d+')  }} is installed, and {{  loki_version  }} is the newest"
 
 - name: install loki if its not present
