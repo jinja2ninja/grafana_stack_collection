@@ -15,6 +15,7 @@
 
 - name: Verify
   hosts: all
+  become: true
   tasks:
 
   - name: Verify Grafana is serving web requests.

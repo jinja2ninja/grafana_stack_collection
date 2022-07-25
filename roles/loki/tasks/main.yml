@@ -17,7 +17,7 @@
   register: binary
 
 - name: check loki version
-  ansible.builtin.command: sudo /opt/loki/loki --version
+  ansible.builtin.command: sudo /opt/loki/loki --version  -config.file /etc/loki/loki.yml
   register: loki_version_check
   when: binary.stat.exists
   changed_when: false
