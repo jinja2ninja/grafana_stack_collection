@@ -7,7 +7,7 @@
     remote_src: true
   tags:
     - prometheus_exporter
-  when: node_exporter_binary_local_dir | length == 0
+  when: node_exporter_binary_local_dir is not defined
 
 - name: create /opt/prometheus directory
   ansible.builtin.file:
@@ -28,7 +28,7 @@
     remote_src: true
   tags:
     - prometheus_exporter
-  when: node_exporter_binary_local_dir | length == 0
+  when: node_exporter_binary_local_dir is not defined
 
 - name: move (existing) node_exporter binary
   ansible.builtin.copy:
@@ -40,7 +40,7 @@
     remote_src: true
   tags:
     - prometheus_exporter
-  when: node_exporter_binary_local_dir | length > 0
+  when: node_exporter_binary_local_dir is defined
 
 - name: template systemd unit file
   ansible.builtin.template:
