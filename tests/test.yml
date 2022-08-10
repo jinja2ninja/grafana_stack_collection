@@ -24,7 +24,6 @@
       status_code: 200
     retries: 3
     delay: 3
-    until: result.rc == 0
 
   - name: Verify Prometheus is serving web requests.
     ansible.builtin.uri:
@@ -32,7 +31,6 @@
       status_code: 200
     retries: 3
     delay: 3
-    until: result.rc == 0
     
   - name: enable and start loki service
     ansible.builtin.systemd:
