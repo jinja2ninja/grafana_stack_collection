@@ -1,7 +1,7 @@
 # Ansible Collection - fahcsim.grafana_stack
 [![CI](https://github.com/fahcsim/grafana_stack_collection/actions/workflows/prometheus.yml/badge.svg)](https://github.com/fahcsim/grafana_stack_collection/actions/workflows/prometheus.yml)  
 [![Release](https://github.com/fahcsim/grafana_stack_collection/actions/workflows/release.yml/badge.svg)](https://github.com/fahcsim/grafana_stack_collection/actions/workflows/release.yml)
-### Version 1.1.0
+### Version 1.1.1
 This should be enough to set up centralized logging and monitoring fairly easily. Prometheus will be configured to monitor every host in the inventory (see roles/prometheus/templates/prometheus.yml.j2). Loki agents will point to the loki server(configured as `loki_server` variable). All of these services are installed as binaries with systemd.
 ### This collection has a role for each of the following:
 - Prometheus
@@ -37,3 +37,6 @@ Each service can be updated by changing the `<service>_version` variable, as lon
 ##### Promtail
 `promtail_version: 2.6.1`
 `loki_server: localhost` - change this to whatever host you want to use as the loki server
+
+### Node Exporter Offline Installation
+set the variable `node_exporter_binary_local_dir` to the path of the node exporter binary you copied locally
