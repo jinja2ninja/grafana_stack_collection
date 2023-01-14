@@ -1,0 +1,97 @@
+image:
+  # -- The repository to pull the image from.
+  repository: ghcr.io/linuxserver/snapdrop
+  # -- The docker tag, if left empty chart's appVersion will be used.
+  tag: version-724f0af5
+  # -- The pull policy for the deployment.
+  pullPolicy: IfNotPresent
+
+nameOverride: ''
+fullnameOverride: ''
+
+deployment:
+  # -- Create a workload for this chart.
+  enabled: true
+  # -- Type of the workload object.
+  kind: Deployment
+  # -- The number of replicas.
+  replicas: 1
+  # -- Additional annotations for the deployment object.
+  annotations: {}
+  # -- Additional labels for the deployment object.
+  labels: {}
+
+service:
+  # -- Create a service for exposing this chart.
+  enabled: true
+  # -- The service type used.
+  type: ClusterIP
+  # -- Additional annotations for the service object.
+  annotations: {}
+  # -- Additional labels for the service object.
+  labels: {}
+
+ingressRoute:
+  # -- Create an IngressRoute object for exposing this chart.
+  create: true
+  # -- Use an existing secret containing the TLS certificate.
+  tlsSecretName: 'snapdrop'
+  
+certificate:
+  # -- Create an Certificate object for the exposed chart.
+  create: true
+  # -- List of subject alternative names for the certificate.
+  dnsNames: ['drop.mischaf.us']
+  # -- Name of the secret in which the certificate will be stored. Defaults to the first item in dnsNames.
+  secretName: 'snapdrop'
+  issuerRef:
+    # -- Type of the referenced certificate issuer. Can be "Issuer" or "ClusterIssuer".
+    kind: ClusterIssuer
+    # -- Name of the referenced certificate issuer.
+    name: 'letsencrypt-production'
+  # -- Additional annotations for the certificate object.
+  annotations: {}
+  # -- Additional labels for the certificate object.
+  labels: {}
+
+env:
+  # -- Timezone for the container.
+  - name: TZ
+    value: America/Los_Angeles
+  # -- UID to be used at runtime inside the container.
+  - name: PUID
+    value: 1000
+  # -- GID to be used at runtime inside the container.
+  - name: PGID
+    value: 1000
+
+ports:
+  http:
+    # -- Enable the port inside the `Deployment` and `Service` objects.
+    enabled: true
+    # -- The port used as internal port and cluster-wide port if `.service.type` == `ClusterIP`.
+    port: 80
+    # -- The external port used if `.service.type` == `NodePort`.
+    nodePort: null
+    # -- The protocol used for the service.
+    protocol: TCP
+
+serviceAccount:
+  # -- Specify the service account used for the deployment.
+  name: ''
+
+# -- Pod-level security attributes. More info [here](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context).
+securityContext: {}
+  # fsGroup: 1000
+  # runAsNonRoot: true
+  # runAsGroup: 1000
+  # runAsUser: 1000
+
+# -- Compute resources used by the container. More info [here](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
