@@ -1,7 +1,10 @@
+{% if custom_server_config is defined %}
+{{ custom_server_config }}
+{% else %}
 server:
   http_listen_port: 9080
   grpc_listen_port: 0
-
+{% endif %}
 positions:
   filename: /tmp/positions.yaml
 
