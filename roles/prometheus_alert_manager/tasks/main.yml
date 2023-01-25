@@ -1,0 +1,123 @@
+---
+- name: create /opt/prometheus_alert_manager_alert_manager directory
+  ansible.builtin.file:
+    path: /opt/prometheus_alert_manager
+    state: directory
+    owner: root
+    group: root
+    mode: 0750
+  changed_when: false
+
+- name: check if binary exists
+  ansible.builtin.stat:
+    path: /opt/prometheus_alert_manager/alertmanager
+  register: binary
+
+- name: check alert manager version
+  ansible.builtin.command: /opt/prometheus_alert_manager/alertmanager --version
+  register: alert_manager_version_check
+  when: binary.stat.exists
+  changed_when: false
+
+- name: install alert manager if its not present
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus/alertmanager/releases/download/v\
+         {{  alert_manager_version  }}/alertmanager-{{  alert_manager_version  }}.linux-amd64.tar.gz"
+    dest: /opt/prometheus_alert_manager
+    remote_src: true
+  tags:
+    - alert_manager
+  when: not binary.stat.exists
+
+- name: update alert manager if different version is defined in variable
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus/alertmanager/releases/download/v\
+         {{  alert_manager_version  }}/alertmanager-{{  alert_manager_version  }}.linux-amd64.tar.gz"
+    dest: /opt/prometheus_alert_manager/
+    remote_src: true
+  tags:
+    - alert_manager
+  when: (alert_manager_version_check | regex_search('\d.\d+.\d+') != alert_manager_version)
+  notify: restart alertmanager
+
+- name: check if install artifacts exist
+  ansible.builtin.stat:
+    path: "/opt/prometheus_alert_manager/alertmanager-{{  alert_manager_version  }}.linux-amd64/"
+  register: artifacts
+
+- name: stop alertmanager service temporarily
+  ansible.builtin.systemd:
+    name: alertmanager
+    state: stopped
+  when: (artifacts.stat.exists) and binary.stat.exists
+
+- name: Move alert-manager and amtool binaries
+  ansible.builtin.copy:
+    src: "/opt/prometheus_alert_manager/alertmanager-{{  alert_manager_version  }}.linux-amd64/"
+    dest: /opt/prometheus_alert_manager
+    owner: root
+    group: root
+    mode: '0750'
+    remote_src: true
+  when: artifacts.stat.exists
+
+- name: remove artifacts from prometheus install
+  ansible.builtin.file:
+    path: "{{  item  }}"
+    state: absent
+  with_items:
+    - "/opt/prometheus_alert_manager/alertmanager-{{  alert_manager_version  }}.linux-amd64"
+    - "/opt/prometheus_alert_manager/alertmanager.yml"
+  when: artifacts.stat.exists
+
+- name: start alertmanager service temporarily
+  ansible.builtin.systemd:
+    name: alertmanager
+    state: started
+  when: (artifacts.stat.exists) and binary.stat.exists
+
+- name: template systemd unit file
+  ansible.builtin.template:
+    src: templates/alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+    owner: root
+    group: root
+    mode: 0750
+  tags:
+    - alertmanager
+  changed_when: false
+
+- name: make directory for alertmanager config and data
+  ansible.builtin.file:
+    path: "{{  item  }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - /etc/alertmanager
+    - /opt/prometheus_alert_manager/data
+
+- name: template alertmanager config file
+  ansible.builtin.template:
+    src: templates/alertmanager.yml.j2
+    dest: /etc/alertmanager/alertmanager.yml
+    owner: root
+    group: root
+    mode: 0640
+  tags:
+    - template
+
+- name: reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+  tags:
+    - alertmanager
+
+- name: enable and start alertmanager service
+  ansible.builtin.systemd:
+    name: alertmanager
+    enabled: true
+    state: started
+  tags:
+    - alertmanager
