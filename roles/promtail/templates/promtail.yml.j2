@@ -1,14 +1,18 @@
+{% if custom_server_config is defined %}
+{{ custom_server_config }}
+{% else %}
 server:
   http_listen_port: 9080
   grpc_listen_port: 0
-
+{% endif %}
 positions:
   filename: /tmp/positions.yaml
 
 clients:
-  - url: "http://{{  loki_server  }}:3100/loki/api/v1/push"
+  - url: "http://{{  loki_server  }}:{{ loki_port }}/loki/api/v1/push"
 
 scrape_configs:
+{% if add_inventory_hosts %}
   - job_name: system
     static_configs:
       - targets:
@@ -17,3 +21,8 @@ scrape_configs:
           job: varlogs
           __path__: /var/log/*log
           host: {{  inventory_hostname  }}
+{% endif %}
+
+{% if custom_scrape_configs is defined %}
+{{ custom_scrape_configs }}
+{% endif %}

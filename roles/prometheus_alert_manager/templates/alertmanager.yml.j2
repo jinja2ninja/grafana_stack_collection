@@ -1,0 +1,29 @@
+global:
+  resolve_timeout: 5m
+
+{% if pushover %}
+route:
+  receiver: pushover
+
+receivers:
+  - name: pushover
+    pushover_configs:
+      - token: {{  pushover_token  }}
+        user_key: {{  pushover_key  }}
+{% else %}
+route:
+  receiver: "null"
+  group_by:
+  - job
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+receivers:
+- name: "null"
+{% endif %}
+
+
+
+{% if extra_alertmanager_config is defined %}
+{{  extra_alertmanager_config  }}
+{% endif %}

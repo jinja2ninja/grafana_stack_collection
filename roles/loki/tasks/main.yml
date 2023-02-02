@@ -3,28 +3,51 @@
     name: unzip
     state: present
 
-- name: create /opt/loki directory
+- name: create loki directories
   ansible.builtin.file:
-    path: /opt/loki
+    path: "{{ item.path }}"
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "{{ item.mode }}"
+  with_items:
+    - {'path': '/opt/loki', 'mode': '0755'}
+    - {'path': '/etc/loki', 'mode': '0644'}
 
-- name: check if binary exists
-  ansible.builtin.stat:
-    path: /opt/loki/loki
-  register: binary
+- name: template loki config files
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - {'src': 'templates/loki_test.yml.j2', 'dest': '/etc/loki/loki_test.yml'}
+    - {'src': 'templates/loki.yml.j2', 'dest': '/etc/loki/loki.yml'}
 
-- name: check loki version
-  ansible.builtin.command: sudo /opt/loki/loki --version  -config.file /etc/loki/loki.yml
-  register: loki_version_check
-  when: binary.stat.exists
-  changed_when: false
+- name: Loki version block
+  block:
+    - name: check if binary exists
+      ansible.builtin.stat:
+        path: /opt/loki/loki
+      register: binary
 
-- name: Show loki version
-  ansible.builtin.debug:
-    msg: "{{  loki_version_check | regex_search('\\d.\\d+.\\d+')  }} is installed, and {{  loki_version  }} is the newest"
+    - name: check loki version
+      ansible.builtin.command: sudo /opt/loki/loki --version  -config.file /etc/loki/loki.yml
+      register: loki_version_check
+      when: binary.stat.exists
+      changed_when: false
+
+    - name: Show loki version
+      ansible.builtin.debug:
+        msg: "{{  loki_version_check | regex_search('\\d.\\d+.\\d+')  }} is installed, and {{  loki_version  }} is the newest"
+  rescue:
+    - name: show rescue message
+      ansible.builtin.debug: 
+        msg: "The loki version check seems to have failed. Setting the version to match the one defined by 'loki_version' variable."
+    - name: "Set variable for loki version"
+      ansible.builtin.set_fact:
+        loki_version_check: "{{ loki_version }}"     
 
 - name: install loki if its not present
   ansible.builtin.unarchive:
@@ -61,22 +84,6 @@
   tags:
     - loki
   notify: reload systemd daemon
-
-- name: make directory for loki config
-  ansible.builtin.file:
-    path: /etc/loki
-    state: directory
-    owner: root
-    group: root
-    mode: 0644
-
-- name: template loki config file
-  ansible.builtin.template:
-    src: templates/loki.yml.j2
-    dest: /etc/loki/loki.yml
-    owner: root
-    group: root
-    mode: 0644
 
 - name: enable and start loki service
   ansible.builtin.systemd:
