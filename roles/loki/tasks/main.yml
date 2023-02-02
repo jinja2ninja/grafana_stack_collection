@@ -11,16 +11,25 @@
     group: root
     mode: 0755
 
+- name: template loki testing config file
+  ansible.builtin.template:
+    src: templates/loki_test.yml.j2
+    dest: /etc/loki/loki_test.yml
+    owner: root
+    group: root
+    mode: 0644
+
 - name: check if binary exists
   ansible.builtin.stat:
     path: /opt/loki/loki
   register: binary
 
 - name: check loki version
-  ansible.builtin.command: sudo /opt/loki/loki --version  -config.file /etc/loki/loki.yml
+  ansible.builtin.command: sudo /opt/loki/loki --version  -config.file /etc/loki/loki_test.yml
   register: loki_version_check
   when: binary.stat.exists
   changed_when: false
+  ignore_errors: true
 
 - name: Show loki version
   ansible.builtin.debug:
