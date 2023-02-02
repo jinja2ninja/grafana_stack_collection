@@ -27,6 +27,11 @@
 
 - name: Check loki version
   block:
+    - name: check if binary exists
+      ansible.builtin.stat:
+        path: /opt/loki/loki
+      register: binary
+
     - name: check loki version
       ansible.builtin.command: sudo /opt/loki/loki --version  -config.file /etc/loki/loki.yml
       register: loki_version_check
@@ -52,10 +57,6 @@
         msg: "{{  loki_version_check | regex_search('\\d.\\d+.\\d+')  }} is installed, and {{  loki_version  }} is the newest"
       when: binary.stat.exists
 
-- name: check if binary exists
-  ansible.builtin.stat:
-    path: /opt/loki/loki
-  register: binary
 
 - name: install loki if its not present
   ansible.builtin.unarchive:
