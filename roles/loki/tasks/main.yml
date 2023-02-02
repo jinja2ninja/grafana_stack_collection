@@ -55,8 +55,8 @@
       changed_when: false
 
     - ansible.builtin.file:
-      path: /etc/loki/loki_test.yml
-      state: absent
+        path: /etc/loki/loki_test.yml
+        state: absent
 
     - name: Show loki version
       ansible.builtin.debug:
