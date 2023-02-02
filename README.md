@@ -31,7 +31,7 @@ Current supported distributions are Debian 10/11 and Ubuntu 20/22. It may work o
 Each service can be updated by changing the `<service>_version` variable, as long as a corresponding version exists in the project's github repo.
 #### Current Defaults
 ##### Prometheus
-`prometheus_version: 2.37.0`
+`prometheus_version: 2.42.0`
 ##### Prometheus Alert Manager
 `alert_manager_version: 0.24.0`
 `pushover: true` - This variables defines whether or not to include the Pusover config section.
@@ -39,7 +39,7 @@ Each service can be updated by changing the `<service>_version` variable, as lon
 `pushover_key: <pushover user key>`
 `extra_alertmanager_config: <additional alertmanager config goes here` - If you're not using pushover, or have additional config, put it in this variable.
 ##### Loki
-`loki_version: 2.6.1`
+`loki_version: 2.7.3`
 ##### Prometheus Node Exporter
 `node_exporter_version: 1.3.1`
 ##### Promtail
