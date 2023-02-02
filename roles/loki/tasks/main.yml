@@ -25,7 +25,7 @@
     - {'src': 'templates/loki_test.yml.j2', 'dest': '/etc/loki/loki_test.yml'}
     - {'src': 'templates/loki.yml.j2', 'dest': '/etc/loki/loki.yml'}
 
-- name: Check loki version
+- name: Loki version block
   block:
     - name: check if binary exists
       ansible.builtin.stat:
@@ -42,21 +42,12 @@
       ansible.builtin.debug:
         msg: "{{  loki_version_check | regex_search('\\d.\\d+.\\d+')  }} is installed, and {{  loki_version  }} is the newest"
   rescue:
-    - name: check loki version
-      ansible.builtin.command: sudo /opt/loki/loki --version  -config.file /etc/loki/loki_test.yml
-      register: loki_version_check
-      when: binary.stat.exists
-      changed_when: false
-
-    - ansible.builtin.file:
-        path: /etc/loki/loki_test.yml
-        state: absent
-
-    - name: Show loki version
-      ansible.builtin.debug:
-        msg: "{{  loki_version_check | regex_search('\\d.\\d+.\\d+')  }} is installed, and {{  loki_version  }} is the newest"
-      when: binary.stat.exists
-
+    - name: show rescue message
+      ansible.builtin.debug: 
+        msg: "The loki version check seems to have failed. Setting the version to match the one defined by 'loki_version' variable."
+    - name: "Set variable for loki version"
+      ansible.builtin.set_fact:
+        loki_version_check: "{{ loki_version }}"     
 
 - name: install loki if its not present
   ansible.builtin.unarchive:
