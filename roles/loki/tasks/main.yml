@@ -3,37 +3,27 @@
     name: unzip
     state: present
 
-- name: create /opt/loki directory
+- name: create loki directories
   ansible.builtin.file:
-    path: /opt/loki
+    path: "{{ item.path }}"
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "{{ item.mode }}"
+  with_items:
+    - {'path': '/opt/loki', 'mode': '0755'}
+    - {'path': '/etc/loki', 'mode': '0644'}
 
-- name: template loki testing config file
+- name: template loki config files
   ansible.builtin.template:
-    src: templates/loki_test.yml.j2
-    dest: /etc/loki/loki_test.yml
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: root
     group: root
     mode: 0644
-
-- name: make directory for loki config
-  ansible.builtin.file:
-    path: /etc/loki
-    state: directory
-    owner: root
-    group: root
-    mode: 0644
-
-- name: template loki config file
-  ansible.builtin.template:
-    src: templates/loki.yml.j2
-    dest: /etc/loki/loki.yml
-    owner: root
-    group: root
-    mode: 0644
+  with_items:
+    - {'src': 'templates/loki_test.yml.j2', 'dest': '/etc/loki/loki_test.yml'}
+    - {'src': 'templates/loki.yml.j2', 'dest': '/etc/loki/loki.yml'}
 
 - name: Check loki version
   block:
@@ -46,7 +36,6 @@
     - name: Show loki version
       ansible.builtin.debug:
         msg: "{{  loki_version_check | regex_search('\\d.\\d+.\\d+')  }} is installed, and {{  loki_version  }} is the newest"
-
   rescue:
     - name: check loki version
       ansible.builtin.command: sudo /opt/loki/loki --version  -config.file /etc/loki/loki_test.yml
@@ -61,6 +50,7 @@
     - name: Show loki version
       ansible.builtin.debug:
         msg: "{{  loki_version_check | regex_search('\\d.\\d+.\\d+')  }} is installed, and {{  loki_version  }} is the newest"
+      when: binary.stat.exists
 
 - name: check if binary exists
   ansible.builtin.stat:
