@@ -32,6 +32,7 @@ Each service can be updated by changing the `<service>_version` variable, as lon
 #### Current Defaults
 ##### Prometheus
 `prometheus_version: 2.42.0`
+`prometheus_retention_time: "15d"`
 ##### Prometheus Alert Manager
 `alert_manager_version: 0.25.0`
 `pushover: true` - This variables defines whether or not to include the Pusover config section.
