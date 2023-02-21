@@ -1,5 +1,8 @@
 global:
   scrape_interval:     15s # By default, scrape targets every 15 seconds.
+{% if extra_prometheus_config is defined %}
+{{  extra_prometheus_config  }}
+{% endif %}
 scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 5s

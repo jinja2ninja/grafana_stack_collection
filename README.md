@@ -33,6 +33,7 @@ Each service can be updated by changing the `<service>_version` variable, as lon
 ##### Prometheus
 `prometheus_version: 2.42.0`
 `prometheus_retention_time: "15d"`
+`extra_prometheus_config: <additional prometheus config goes here` - If you want to add custom prometheus configuration, put it in this variable.
 ##### Prometheus Alert Manager
 `alert_manager_version: 0.25.0`
 `pushover: true` - This variables defines whether or not to include the Pusover config section.
@@ -51,6 +52,21 @@ Each service can be updated by changing the `<service>_version` variable, as lon
 set the variable `node_exporter_binary_local_dir` to the path of the node exporter binary you copied locally
 
 ### Customization
+
+#### Prometheus
+
+```
+- name: bootstrap monitoring server
+  hosts: monitoring
+  become: True
+  vars:
+    extra_prometheus_config: |
+      rule_files:
+        - /etc/prometheus/rules.d/alert.rules.yml
+  roles:
+    - fahcsim.grafana_stack.prometheus
+```
+
 #### Promtail
 Several variables can be used to customize the config file for promtail:
 - `custom_server_config` - If defined this will replace the "server" section of the config with whatever is defined in the variable. 
