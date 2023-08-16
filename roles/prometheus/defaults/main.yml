@@ -2,3 +2,5 @@
 monitoring_group: local
 prometheus_version: 2.42.0
 prometheus_retention_time: "15d"
+prometheus_config_template: 'templates/prometheus.yml.j2'
+prometheus_service_template: 'templates/prometheus.service.j2'

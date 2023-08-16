@@ -2,3 +2,6 @@ promtail_version: 2.7.3
 loki_server: localhost
 loki_port: 3100
 add_inventory_hosts: true
+  
+promtail_config_template: 'templates/promtail.yml.j2'
+promtail_service_template: 'templates/promtail.service.j2'

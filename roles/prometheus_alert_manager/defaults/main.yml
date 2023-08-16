@@ -1,2 +1,4 @@
+alert_manager_config_template: 'templates/alertmanager.yml.j2'
+alert_manager_service_template: 'templates/alertmanager.service.j2'
 alert_manager_version: 0.25.0
 pushover: false

@@ -75,7 +75,7 @@
 
 - name: template systemd unit file
   ansible.builtin.template:
-    src: templates/promtail.service.j2
+    src: "{{ promtail_service_template }}"
     dest: /etc/systemd/system/promtail.service
     owner: root
     group: root
@@ -99,7 +99,7 @@
 
 - name: template promtail config file
   ansible.builtin.template:
-    src: templates/promtail.yml.j2
+    src: "{{ promtail_config_template }}"
     dest: /usr/local/bin/config-promtail.yml
     owner: root
     group: root
