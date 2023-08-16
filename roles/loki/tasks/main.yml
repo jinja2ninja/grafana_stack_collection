@@ -16,14 +16,11 @@
 
 - name: template loki config files
   ansible.builtin.template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
+    src: "{{ loki_config_template }}"
+    dest: /etc/loki/loki.yml
     owner: root
     group: root
     mode: 0644
-  with_items:
-    - {'src': "{{ loki_test_config_template }}", 'dest': '/etc/loki/loki_test.yml'}
-    - {'src': "{{ loki_config_template }}", 'dest': '/etc/loki/loki.yml'}
 
 - name: Loki version block
   block:
@@ -33,7 +30,7 @@
       register: binary
 
     - name: check loki version
-      ansible.builtin.command: sudo /opt/loki/loki --version  -config.file /etc/loki/loki.yml
+      ansible.builtin.command: sudo /opt/loki/loki -version
       register: loki_version_check
       when: binary.stat.exists
       changed_when: false

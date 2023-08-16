@@ -98,7 +98,6 @@ alert_manager_service_template: 'templates/alertmanager.service.j2'
 
 loki_config_template: 'templates/loki.yml.j2'
 loki_service_template: 'templates/loki.service.j2'
-loki_test_config_template: 'templates/loki_test.yml.j2'
 
 node_exporter_service_template: 'templates/node-exporter.service.j2'
 
