@@ -100,7 +100,7 @@
 - name: template promtail config file
   ansible.builtin.template:
     src: templates/promtail.yml.j2
-    dest: /usr/local/bin/config-promtail.yml
+    dest: /etc/promtail/promtail.yml
     owner: root
     group: root
     mode: 0644
