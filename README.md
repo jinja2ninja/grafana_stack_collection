@@ -73,3 +73,38 @@ Several variables can be used to customize the config file for promtail:
 - `custom_scrape_configs` - If defined this will replace the "scrape_configs" section of the config with whatever is defined in the variable. 
 - `loki_server` - If defined this will replace the loki server's address (if using this, you must also define the port as shown below)
 - `loki_port` - If defined this will replace the loki server's port (if using this, you must also define the address as shown above)
+
+
+### Altering the templates used
+In case the provided customization options or jinja templates are not sufficient for you needs,
+you can override the template files used for rendering the configuration and systemd service files.
+
+When you override the file paths, please take note of the resolving of relative paths, as described here:
+https://docs.ansible.com/ansible/latest/playbook_guide/playbook_pathing.html#resolving-local-relative-paths
+
+For example, to override the Loki configuration file when you depend on it in a role:
+
+```yaml
+# in meta/main.yml
+dependencies:
+  - role: fahcsim.grafana_stack.loki
+    loki_config_template: "templates/my-loki.yml.j2"
+```
+
+An overview of the variables available for overriding and their default values:
+```yaml
+alert_manager_config_template: 'templates/alertmanager.yml.j2'
+alert_manager_service_template: 'templates/alertmanager.service.j2'
+
+loki_config_template: 'templates/loki.yml.j2'
+loki_service_template: 'templates/loki.service.j2'
+loki_test_config_template: 'templates/loki_test.yml.j2'
+
+node_exporter_service_template: 'templates/node-exporter.service.j2'
+
+prometheus_config_template: 'templates/prometheus.yml.j2'
+prometheus_service_template: 'templates/prometheus.service.j2'
+
+promtail_config_template: 'templates/promtail.yml.j2'
+promtail_service_template: 'templates/promtail.service.j2'
+```
