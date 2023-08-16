@@ -44,7 +44,7 @@
 
 - name: template systemd unit file
   ansible.builtin.template:
-    src: templates/node-exporter.service.j2
+    src: "{{ node_exporter_service_template }}"
     dest: /etc/systemd/system/node_exporter.service
     owner: root
     group: root

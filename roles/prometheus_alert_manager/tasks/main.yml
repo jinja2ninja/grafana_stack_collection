@@ -78,7 +78,7 @@
 
 - name: template systemd unit file
   ansible.builtin.template:
-    src: templates/alertmanager.service.j2
+    src: "{{ alert_manager_service_template }}"
     dest: /etc/systemd/system/alertmanager.service
     owner: root
     group: root
@@ -100,7 +100,7 @@
 
 - name: template alertmanager config file
   ansible.builtin.template:
-    src: templates/alertmanager.yml.j2
+    src: "{{ alert_manager_config_template }}"
     dest: /etc/alertmanager/alertmanager.yml
     owner: root
     group: root

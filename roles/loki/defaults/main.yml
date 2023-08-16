@@ -1,1 +1,4 @@
 loki_version: 2.7.3
+loki_config_template: 'templates/loki.yml.j2'
+loki_test_config_template: 'templates/loki_test.yml.j2'
+loki_service_template: 'templates/loki.service.j2'

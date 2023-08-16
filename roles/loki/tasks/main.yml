@@ -22,8 +22,8 @@
     group: root
     mode: 0644
   with_items:
-    - {'src': 'templates/loki_test.yml.j2', 'dest': '/etc/loki/loki_test.yml'}
-    - {'src': 'templates/loki.yml.j2', 'dest': '/etc/loki/loki.yml'}
+    - {'src': "{{ loki_test_config_template }}", 'dest': '/etc/loki/loki_test.yml'}
+    - {'src': "{{ loki_config_template }}", 'dest': '/etc/loki/loki.yml'}
 
 - name: Loki version block
   block:
@@ -76,7 +76,7 @@
 
 - name: template systemd unit file
   ansible.builtin.template:
-    src: templates/loki.service.j2
+    src: "{{ loki_service_template }}"
     dest: /etc/systemd/system/loki.service
     owner: root
     group: root
