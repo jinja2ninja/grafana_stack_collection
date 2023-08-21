@@ -1,2 +1,4 @@
+---
 alert_manager_version: 0.25.0
 pushover: false
+alertmanager_external_url: ""
