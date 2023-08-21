@@ -4,7 +4,10 @@ Description=Alertmanager for prometheus
 [Service]
 Restart=always
 User=root
-ExecStart=/opt/prometheus_alert_manager/alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/opt/prometheus_alert_manager/data            
+ExecStart=/opt/prometheus_alert_manager/alertmanager \
+  --config.file=/etc/alertmanager/alertmanager.yml \
+  --storage.path=/opt/prometheus_alert_manager/data \
+  --web.external-url={{ alertmanager_external_url }}
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
 SendSIGKILL=no
